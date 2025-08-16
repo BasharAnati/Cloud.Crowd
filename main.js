@@ -23,17 +23,18 @@ const mainFields = {
 
 // Status columns (with TT renames applied)
 const STATUS_COLUMNS = {
-  cctv: ['Under Review', 'Escalated', 'Closed'],
-  ce: ['Pending (Customer Call Required)', 'Under Review', 'Escalated', 'Closed'],
+  cctv: [ 'Escalated', 'Under Review', 'Closed'],
+  ce: [  'Escalated',  'Under Review','Pending (Customer Call Required)', 'Closed'],
   'free-orders': ['Active', 'Taken', 'Not Active'],
-  complaints: ['Pending (Customer Call Required)', 'Under Review', 'Escalated', 'Closed'],
+  complaints: [ 'Escalated', 'Under Review','Pending (Customer Call Required)', 'Closed'],
   'time-table': [
+    'No Call Needed',
     'Pending Call',
     'No Answer',
     'Scheduled',
     'Issue',
     'Returned',
-    'No Call Needed'
+    
   ]
 };
 
@@ -411,13 +412,16 @@ function openTicketDrawer(index){
 
 /* ====== طباعة الحقول + وضع الملاحظات بمربع في النهاية ====== */
 function buildDrawerReadonly(ticket){
-  const NOTE_KEYS = ['notes','customerNotes','complaintDetails','caseDescription','note'];
+  // ✅ نفضّل note أولاً
+  const NOTE_KEYS = ['note','notes','customerNotes','complaintDetails','caseDescription'];
 
-  // اجمع الملاحظات (Case Details)
+  // اجمع الملاحظات (Note / Case Details) + خزّن المفتاح المستخدم
   let notesText = '';
+  let notesKeyUsed = '';
   for (const nk of NOTE_KEYS){
     if (ticket[nk]){
       notesText = String(ticket[nk] || '').trim();
+      notesKeyUsed = nk;
       break;
     }
   }
@@ -461,11 +465,12 @@ function buildDrawerReadonly(ticket){
     }
   }
 
-  // Case Details (فل وِدث)
+  // ✅ Note / Case Details (فل وِدث) — العنوان حسب السكشن/المفتاح
   if (notesText){
+    const noteTitle = (currentSection === 'time-table' || notesKeyUsed === 'note') ? 'Note' : 'Case Details';
     html += `
       <div class="note-box full-span">
-        <div class="note-title">Case Details</div>
+        <div class="note-title">${noteTitle}</div>
         <div class="note-text">${escapeHtml(notesText)}</div>
       </div>
     `;
@@ -487,7 +492,7 @@ function buildDrawerReadonly(ticket){
   // لف الشبكة داخل .drawer-body (الحاوية أصلاً عندك هي #drawer-body)
   return html || '<div class="no-tickets full-span">No details.</div>';
 
-  // عنصر صف مفتاح/قيمة
+  // نفس مساعدتك القديمة
   function rowKV(label, value){
     return `
       <div class="kv">
