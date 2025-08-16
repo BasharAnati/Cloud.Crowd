@@ -931,7 +931,7 @@ if (document.readyState==='loading') document.addEventListener('DOMContentLoaded
 else bindFormHandler();
 
 // Go back
-function goBack(){ window.location.href='index.html'; }
+function goBack(){ window.location.href='dashboard.html'; }
 window.goBack = goBack;
 
 // Make the center nav logo clickable to home
@@ -943,6 +943,7 @@ window.addEventListener('load', ()=>{
 
   const centerLogo = document.querySelector('.nav-center-logo');
   if (centerLogo){
-    centerLogo.addEventListener('click', ()=> { window.location.href = 'index.html'; });
+    centerLogo.addEventListener('click', ()=> { window.location.href = 'dashboard.html'; });
   }
 });
+
